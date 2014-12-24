@@ -26,6 +26,7 @@ class SessionAgent(object):
 		session_url = 'http://127.0.0.1:8002/session'
 		cookie_name = 'session_id'
 		session_verify_method = 'verify/'
+		session_auth_method = 'auth_user/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -58,4 +59,9 @@ class SessionAgent(object):
 				print "DEB: {0}/{1}".format(self.session_url, uri)
 				return self.proto_agent.send_req_to_service(url="{0}/{1}".format(self.session_url, uri), **kwards)
 
+		def auth_user(self, username, password):
+				print "DEB: ask for authorization. user `{}'".format(username)
+				response = self.send_req(uri=self.session_auth_method, method='POST',
+										fields={'user_login': username, 'user_pass': password})
+				return response
 
