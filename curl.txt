@@ -1,1 +1,1 @@
-curl -kgvv http://127.0.0.1:8001/method/ -H "Cookie: session_id=12345"
+curl -kgvv http://127.0.0.1:8001/method/ -H "Cookie: cookie_token="

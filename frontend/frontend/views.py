@@ -1,10 +1,11 @@
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from .proto import SessionAgent
 from .forms import LoginForm
 import urllib3
 import json
-from django.views.decorators.csrf import csrf_exempt
+import re
 
 def home(request):
 		return render(request, 'frontend/home.html')
@@ -26,6 +27,7 @@ def method(request):
 
 		return HttpResponse("some method answer")
 
+
 @csrf_exempt
 def login(request):
 		if request.method == 'GET':
@@ -39,14 +41,15 @@ def login(request):
 		print "INF: username {} password {}".format(login_form.username, login_form.password)
 
 		session_agent = SessionAgent()
-		resp = session_agent.auth_user(login_form.username, login_form.password)
-		if resp is None:
-				raise Http404
+		session_cookies = session_agent.auth_user(login_form.username, login_form.password)
 
-		resp_data = json.loads(resp.data.decode('utf-8'))
+		response = HttpResponse()
+		if session_cookies is None:
+				response.status_code = 500
+				return response
 
-		for key, value in resp_data.items():
-				print "{} -> {}".format(key, value)
+		response = redirect('method')
+		for key, value in session_cookies.items():
+				response.set_cookie(key, value)
 
-		return HttpResponse("You have been succesfully loginned!")
-
+		return response

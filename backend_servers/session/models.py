@@ -9,9 +9,12 @@ class SessionAuth(models.Model):
 		user = models.ForeignKey(User)
 
 		def is_expired(self):
-				print "DEB: live time {0}".format((datetime.now() - self.creation_time).total_seconds())
+				time_now = datetime.now().replace(tzinfo=None)
+				creation_time = self.creation_time.replace(tzinfo=None)
+
+				print "DEB: live time {}".format((time_now - creation_time).total_seconds())
 				print "DEB: config exp time {0}".format(SessionConf.exp_time)
-				return (datetime.now() - self.creation_time).total_seconds() >= SessionConf.exp_time
+				return (time_now - creation_time).total_seconds() >= SessionConf.exp_time
 
 		def expires_in(self):
 				return SessionConf.exp_time
