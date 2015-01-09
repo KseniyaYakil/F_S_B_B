@@ -13,4 +13,14 @@ class LoginForm(forms.Form):
 				self.username = self.cleaned_data['username']
 				self.password = self.cleaned_data['password']
 
+class PositionCreationForm(forms.Form):
+		name = forms.CharField(label='Position name', max_length=64)
+		salary = forms.IntegerField(label='Salary', min_value=5000)
+		salary_currency = forms.CharField(label='Salary currency')
 
+		def clean(self):
+				super(PositionCreationForm, self).clean()
+
+				self.name = self.cleaned_data['name']
+				self.salary = self.cleaned_data['salary']
+				self.salary_currency = self.cleaned_data['salary_currency']

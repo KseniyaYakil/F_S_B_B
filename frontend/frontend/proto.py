@@ -23,6 +23,34 @@ class Agent(object):
 				print('ERR: exception occured: {}'.format(ex))
 				return None
 
+class PositionAgent(object):
+		backend_name = "position"
+		url = 'http://127.0.01:8003/backends'
+		creation_method = 'positions/'
+
+		def __init__(self):
+				self.proto_agent = Agent()
+
+		def send_req(self, uri, **kwards):
+				print "DEB: {0}/{1}".format(self.url, uri)
+				return self.proto_agent.send_req_to_service(url="{0}/{1}".format(self.url, uri), **kwards)
+
+		def create(self, fields):
+				print "INF: creation req:"
+				for key, value in fields.items():
+						print "\t{} -> {}".format(key, value)
+
+				response = self.send_req(uri=self.creation_method, method='POST', fields=fields)
+
+				if response is None:
+						print "ERR: sending req to `{}' server FAILED".format(self.backend_name)
+						return None
+				if response.status != 200:
+						print "INF: position was not is not created. status = {0}".format(response.status)
+						return None
+
+				return json.loads(response.data.decode('utf-8'))
+
 class SessionAgent(object):
 		session_url = 'http://127.0.0.1:8002/session'
 
