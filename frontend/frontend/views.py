@@ -37,11 +37,11 @@ def position_create(request):
 
 		if request.method == 'GET':
 				creation_form = PositionCreationForm()
-				return render(request, 'frontend/position_creation.html', {'form': creation_form})
+				return render(request, 'frontend/position_modify.html', {'form': creation_form})
 
 		creation_form = PositionCreationForm(request.POST)
 		if not creation_form.is_valid():
-				return render(request, 'frontend/position_creation.html', {'form': creation_form})
+				return render(request, 'frontend/position_modify.html', {'form': creation_form})
 
 		print "INF: creation of position (name={}; salary={}; currency={})".format(creation_form.name,
 																				creation_form.salary,
@@ -58,6 +58,45 @@ def position_create(request):
 				print "INF: status = {}".format(json_ans['status'])
 
 		return redirect('position', pos_id=json_ans['pos_id'])
+
+def position_modify(request, pos_id):
+		res = check_if_authorised(request)
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		if request.method == 'GET':
+				fields = dict()
+				fields['pos_id'] = pos_id
+
+				position_agent = PositionAgent()
+				pos_data = position_agent.get_position(fields)
+				if pos_data is None:
+						response = HttpResponse
+						response.status_code = 500
+						return response
+
+				position = pos_data['positions'].pop()
+
+				modify_form = PositionCreationForm()
+				return render(request, 'frontend/position_modify.html', {'form': modify_form, 'set_values': position})
+
+		modify_form = PositionCreationForm(request.POST)
+		if not modify_form.is_valid():
+				return render(request, 'frontend/position_modify.html', {'form': modify_form})
+
+		print "INF: modify of position (name={}; salary={}; currency={})".format(modify_form.name,
+																				modify_form.salary,
+																				modify_form.salary_currency)
+		fields = dict()
+		fields['name'] = modify_form.name
+		fields['salary'] = modify_form.salary
+		fields['salary_currency'] = modify_form.salary_currency
+
+		position_agent = PositionAgent()
+		position_agent.modify_position(pos_id, fields)
+
+		return redirect('position', pos_id)
 
 def position_get_common(request, fields):
 		position_agent = PositionAgent()
@@ -119,6 +158,7 @@ def position_delete(request, pos_id):
 				return HttpResponse("Position with id = {} was not removed".format(pos_id))
 
 		return HttpResponse("Position with id = {} was succesfully removed".format(pos_id))
+
 
 @csrf_exempt
 def login(request):

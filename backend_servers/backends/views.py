@@ -64,8 +64,6 @@ def positions(request):
 
 @csrf_exempt
 def position(request, pos_id):
-		print "DEB: in position"
-
 		if request.method == 'DELETE':
 				try:
 						pos_obj = Position.objects.get(pk=pos_id)
@@ -75,5 +73,18 @@ def position(request, pos_id):
 				print "INF: position with id={} was removed".format(pos_id)
 				pos_obj.delete()
 				return JsonResponse({'status': 'removed'}, status=200)
+
+		elif request.method == 'PUT':
+				pos_fields = json.loads(request.body.decode('utf-8'))
+				print "INF: modify position ({})".format(pos_fields)
+
+				pos_obj = get_object_or_404(Position, pk=pos_id)
+				pos_obj.name = pos_fields['name']
+				pos_obj.salary = pos_fields['salary']
+				pos_obj.salary_currency = pos_fields['salary_currency']
+
+				pos_obj.save()
+				return JsonResponse({'status': 'modified'}, status=200)
+
 
 		return JsonResponse(status=200)

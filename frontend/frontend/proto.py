@@ -29,6 +29,7 @@ class PositionAgent(object):
 		creation_method = 'positions/'
 		get_method = 'positions/'
 		delete_method = 'position/'
+		modify_method = 'position/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -40,7 +41,7 @@ class PositionAgent(object):
 		def parse_response(self, response):
 				if response is None:
 						print "ERR: sending req to `{}' server FAILED".format(self.backend_name)
-						return None
+
 				if response.status != 200:
 						print "INF: unable to process report. status = {0}".format(response.status)
 
@@ -68,6 +69,11 @@ class PositionAgent(object):
 		def delete_position(self, pos_id):
 				response = self.send_req(uri="{}{}".format(self.delete_method, pos_id), method='DELETE')
 				return self.parse_response(response)
+
+		def modify_position(self, pos_id, fields):
+				response = self.send_req(uri="{}{}".format(self.modify_method, pos_id), method='PUT', fields=fields)
+				print "DEB: resp {}".format(response)
+				return 'modified'
 
 class SessionAgent(object):
 		session_url = 'http://127.0.0.1:8002/session'

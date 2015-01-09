@@ -1,0 +1,19 @@
+
+<form method='post'>
+		{% csrf_token %}
+		<!--
+		{{ form.as_p }}
+		--!>
+		{% if set_values %}
+				<p><label for="id_name">Name:</label>
+				<input id="id_name" type="text" name="name" maxlength="100" value="{{ set_values.name }}" /></p>
+				<p><label for="id_salary">Salary:</label>
+				<input type="text" name="salary" id="id_salary" value="{{ set_values.salary }}" /></p>
+				<p><label for="id_salary_currency">Salary currency:</label>
+				<input type="text" name="salary_currency" id="id_salary_currency" value="{{ set_values.salary_currency }}" /></p>
+				<input type='submit' value='Modify' />
+		{% else %}
+				{{ form.as_p }}
+				<input type='submit' value='Creation' />
+		{% endif %}
+</form>
