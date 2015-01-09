@@ -5,7 +5,6 @@ from .proto import SessionAgent
 from .forms import LoginForm
 import urllib3
 import json
-import re
 
 def home(request):
 		return render(request, 'frontend/home.html')
@@ -53,3 +52,13 @@ def login(request):
 				response.set_cookie(key, value)
 
 		return response
+
+def logout(request):
+		session_agent = SessionAgent()
+		res = session_agent.logout_user(request)
+
+		if res == 0:
+				print "ERR: couldn't logout user"
+
+		return redirect('home')
+

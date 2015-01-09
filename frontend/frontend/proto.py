@@ -31,6 +31,7 @@ class SessionAgent(object):
 
 		session_verify_method = 'verify/'
 		session_auth_method = 'auth_user/'
+		session_logout_method = 'logout/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -57,6 +58,28 @@ class SessionAgent(object):
 
 				session_ans = json.loads(response.data.decode('utf-8'))
 				return 1 if session_ans['status'] == 'valid' else 0
+
+		def logout_user(self, request):
+				if self.cookie_key1 not in request.COOKIES or self.cookie_key2 not in request.COOKIES:
+						print "W: cookies are not setted"
+						return 0
+
+				cookie_1 = request.COOKIES[self.cookie_key1]
+				cookie_2 = request.COOKIES[self.cookie_key2]
+				print "DEB: {} is {}".format(self.cookie_key1, cookie_1)
+				print "DEB: {} is {}".format(self.cookie_key2, cookie_2)
+
+				response = self.send_req(uri=self.session_logout_method, method='DELETE', headers={self.cookie_key1: cookie_1,
+																								self.cookie_key2: cookie_2})
+				if response is None:
+						print "ERR: sending req to session FAILED"
+						return -1
+				if response.status != 200:
+						print "INF: user is not authorized/cookie is expired. status = {0}".format(response.status)
+						return 0
+
+				session_ans = json.loads(response.data.decode('utf-8'))
+				return 1 if session_ans['status'] == 'logged_out' else 0
 
 		def send_req(self, uri, **kwards):
 				print "DEB: {0}/{1}".format(self.session_url, uri)
@@ -99,3 +122,4 @@ class SessionAgent(object):
 						return None
 
 				return self.parse_cookie_values(response.getheaders()['Set-Cookie'])
+
