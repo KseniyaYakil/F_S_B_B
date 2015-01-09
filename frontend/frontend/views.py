@@ -98,6 +98,28 @@ def position_all(request):
 
 		return position_get_common(request, fields)
 
+def position_delete(request, pos_id):
+		res = check_if_authorised(request)
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		print "INF: removing position with id={}".format(pos_id)
+
+		position_agent = PositionAgent()
+		pos_data = position_agent.delete_position(pos_id)
+
+		if pos_data is None:
+				response = HttpResponse
+				response.status_code = 500
+				return response
+
+		if pos_data['status'] != 'removed':
+				print "INF: couldn't remove position with id ={}".format(pos_id)
+				return HttpResponse("Position with id = {} was not removed".format(pos_id))
+
+		return HttpResponse("Position with id = {} was succesfully removed".format(pos_id))
+
 @csrf_exempt
 def login(request):
 		if request.method == 'GET':

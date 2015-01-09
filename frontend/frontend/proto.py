@@ -28,6 +28,7 @@ class PositionAgent(object):
 		url = 'http://127.0.01:8003/backends'
 		creation_method = 'positions/'
 		get_method = 'positions/'
+		delete_method = 'position/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -36,6 +37,15 @@ class PositionAgent(object):
 				print "DEB: {0}/{1}".format(self.url, uri)
 				return self.proto_agent.send_req_to_service(url="{0}/{1}".format(self.url, uri), **kwards)
 
+		def parse_response(self, response):
+				if response is None:
+						print "ERR: sending req to `{}' server FAILED".format(self.backend_name)
+						return None
+				if response.status != 200:
+						print "INF: unable to process report. status = {0}".format(response.status)
+
+				return json.loads(response.data.decode('utf-8'))
+
 		def create(self, fields):
 				print "INF: creation req:"
 				for key, value in fields.items():
@@ -43,33 +53,21 @@ class PositionAgent(object):
 
 				response = self.send_req(uri=self.creation_method, method='POST', fields=fields)
 
-				if response is None:
-						print "ERR: sending req to `{}' server FAILED".format(self.backend_name)
-						return None
-				if response.status != 200:
-						print "INF: position was not is not created. status = {0}".format(response.status)
-						return None
-
-				return json.loads(response.data.decode('utf-8'))
+				return self.parse_response(response)
 
 		def get_position(self, fields):
 				if fields is not None:
 						print "INF: req for position with params"
 						for key, value in fields.items():
 								print "\t{} -> {}".format(key, value)
-				else:
-						print "INF: get all positions"
 
 				response = self.send_req(uri=self.get_method, method='GET', fields=fields)
 
-				if response is None:
-						print "ERR: sending req to `{}' server FAILED".format(self.backend_name)
-						return None
-				if response.status != 200:
-						print "INF: req wasn't processed. status = {0}".format(response.status)
-						return None
+				return self.parse_response(response)
 
-				return json.loads(response.data.decode('utf-8'))
+		def delete_position(self, pos_id):
+				response = self.send_req(uri="{}{}".format(self.delete_method, pos_id), method='DELETE')
+				return self.parse_response(response)
 
 class SessionAgent(object):
 		session_url = 'http://127.0.0.1:8002/session'

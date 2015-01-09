@@ -61,3 +61,19 @@ def positions(request):
 										'positions': result['positions']}, status=200)
 
 		return JsonResponse(status=200)
+
+@csrf_exempt
+def position(request, pos_id):
+		print "DEB: in position"
+
+		if request.method == 'DELETE':
+				try:
+						pos_obj = Position.objects.get(pk=pos_id)
+				except Position.DoesNotExist:
+						return JsonResponse({'status': 'no such position'}, status=401)
+
+				print "INF: position with id={} was removed".format(pos_id)
+				pos_obj.delete()
+				return JsonResponse({'status': 'removed'}, status=200)
+
+		return JsonResponse(status=200)
