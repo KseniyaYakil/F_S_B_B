@@ -9,6 +9,6 @@ urlpatterns = patterns('',
 		url(r'^method/', views.method, name='method'),
 		url(r'^position/create$', views.position_create, name='position_create'),
 		url(r'^position/(?P<pos_id>\d+)$', views.position, name='position'),
-		# url(r'^blog/', include('blog.urls')),
+		url(r'^position/all$', views.position_all, name='position_all'),
 		url(r'^admin/', include(admin.site.urls)),
 )

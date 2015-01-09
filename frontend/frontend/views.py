@@ -29,7 +29,6 @@ def method(request):
 
 		return HttpResponse("some method answer")
 
-
 def position_create(request):
 		res = check_if_authorised(request)
 		if res != 1:
@@ -60,9 +59,44 @@ def position_create(request):
 
 		return redirect('position', pos_id=json_ans['pos_id'])
 
+def position_get_common(request, fields):
+		position_agent = PositionAgent()
+		pos_data = position_agent.get_position(fields)
+
+		if pos_data is None:
+				response = HttpResponse
+				response.status_code = 500
+				return response
+
+		if pos_data['page'] == 0:
+				return render(request, 'frontend/position.html', {'fields': pos_data['positions']})
+		else:
+				return render(request, 'frontend/position.html', {		'fields': pos_data['positions'],
+																		'page': pos_data['page'],
+																		'pages_count': pos_data['pages_count']})
 def position(request, pos_id):
-		print "position id {}".format(pos_id)
-		return HttpResponse("end")
+		res = check_if_authorised(request)
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		print "INF: position by id={}".format(pos_id)
+		fields = dict()
+		fields['pos_id'] = pos_id
+
+		return position_get_common(request, fields)
+
+def position_all(request):
+		res = check_if_authorised(request)
+		#TODO: if not authorised then show just positions names
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		fields = dict()
+		fields['page'] = 1
+
+		return position_get_common(request, fields)
 
 @csrf_exempt
 def login(request):

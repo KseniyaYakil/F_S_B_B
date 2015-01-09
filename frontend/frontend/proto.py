@@ -27,6 +27,7 @@ class PositionAgent(object):
 		backend_name = "position"
 		url = 'http://127.0.01:8003/backends'
 		creation_method = 'positions/'
+		get_method = 'positions/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -47,6 +48,25 @@ class PositionAgent(object):
 						return None
 				if response.status != 200:
 						print "INF: position was not is not created. status = {0}".format(response.status)
+						return None
+
+				return json.loads(response.data.decode('utf-8'))
+
+		def get_position(self, fields):
+				if fields is not None:
+						print "INF: req for position with params"
+						for key, value in fields.items():
+								print "\t{} -> {}".format(key, value)
+				else:
+						print "INF: get all positions"
+
+				response = self.send_req(uri=self.get_method, method='GET', fields=fields)
+
+				if response is None:
+						print "ERR: sending req to `{}' server FAILED".format(self.backend_name)
+						return None
+				if response.status != 200:
+						print "INF: req wasn't processed. status = {0}".format(response.status)
 						return None
 
 				return json.loads(response.data.decode('utf-8'))

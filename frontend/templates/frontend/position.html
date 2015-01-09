@@ -1,0 +1,23 @@
+<head>
+<link rel="table_style" type="text/css" href="table_style.css">
+</head>
+<body>
+		<table>
+		<thead>
+				<tr>
+				  <th>Name</th>
+				  <th>Salary</th>
+				  <th>Salary_currency</th>
+				</tr>
+		</thead>
+		<tbody>
+				{% for f in fields %}
+				<tr>
+				  <td> {{ f.name }}</td>
+				  <td> {{ f.salary }}</td>
+				  <td> {{ f.salary_currency }}</td>
+				</tr>
+				{% endfor %}
+		</tbody>
+		</table>
+</body>
