@@ -1,0 +1,6 @@
+<form action="employe_get_by_id" method='post'>
+		{% csrf_token %}
+		<p><label for "id_emp_get">Employe id:</label>
+		<input id="id_emp_get" type="text" name="emp_id"/></p>
+		<input type="submit" name="emp_get_by_id" value="Get employe"/>
+</form>

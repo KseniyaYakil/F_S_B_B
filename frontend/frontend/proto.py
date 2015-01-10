@@ -186,6 +186,11 @@ class SessionAgent(object):
 				print "DEB: {0}/{1}".format(self.session_url, uri)
 				return self.proto_agent.send_req_to_service(url="{0}/{1}".format(self.session_url, uri), **kwards)
 
+		def get_user_id(self, request):
+				if 'HTTP_USER_ID' not in request.META:
+						return None
+				return request.META.get('HTTP_USER_ID')
+
 		def get_spec_cookie_val(self, key, cookie_str):
 				pattern = ".*?({}=(?P<{}>[^\s;]*))".format(key, key)
 				found_res = re.match(pattern, cookie_str)

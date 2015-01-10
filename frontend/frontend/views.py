@@ -3,8 +3,37 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from .proto import SessionAgent, PositionAgent, EmployeAgent
 from .forms import LoginForm, PositionCreationForm, EmployeForm
+from .forms import PosIDForm, EmpIDForm
 import urllib3
 import json
+
+def position_get_by_id(request):
+		if request.method == 'GET':
+				act_form = PosIDForm()
+				return render(request, 'frontend/position_get_by_id.html', {'form' : act_form})
+
+		act_form = PosIDForm(request.POST)
+		if not act_form.is_valid():
+				return render(request, 'frontend/position_get_by_id.html', {'form' : act_form})
+
+		if act_form.pos_get_by_id:
+				return position(request, act_form.pos_id)
+
+		return HttpResponse("Internal error")
+
+def employe_get_by_id(request):
+		if request.method == 'GET':
+				act_form = EmpIDForm()
+				return render(request, 'frontend/employe_get_by_id.html', {'form' : act_form})
+
+		act_form = EmpIDForm(request.POST)
+		if not act_form.is_valid():
+				return render(request, 'frontend/employe_get_by_id.html', {'form' : act_form})
+
+		if act_form.emp_get_by_id:
+				return position(request, act_form.emp_id)
+
+		return HttpResponse("Internal error")
 
 def home(request):
 		return render(request, 'frontend/home.html')
@@ -12,23 +41,6 @@ def home(request):
 def check_if_authorised(request):
 		session_agent = SessionAgent()
 		return session_agent.check_if_authorized(request)
-
-#TODO: modify to 'me' method
-def method(request):
-		res = check_if_authorised(request)
-
-		if res == -1:
-				response = HttpResponse()
-				response.status_code = 500
-				return response
-
-		if res == 0:
-				print "INF: ask for log in"
-				return render(request, 'frontend/ask_to_login.html')
-
-		#authorized -> request to backend
-
-		return HttpResponse("some method answer")
 
 def employe_create(request):
 		res = check_if_authorised(request)
@@ -337,6 +349,9 @@ def position_delete(request, pos_id):
 
 		return HttpResponse("Position with id = {} was succesfully removed".format(pos_id))
 
+@csrf_exempt
+def user_action(request):
+		return render(request, 'frontend/user_action.html')
 
 @csrf_exempt
 def login(request):
@@ -358,7 +373,7 @@ def login(request):
 				response.status_code = 500
 				return response
 
-		response = redirect('method')
+		response = redirect('user_action')
 		for key, value in session_cookies.items():
 				response.set_cookie(key, value)
 

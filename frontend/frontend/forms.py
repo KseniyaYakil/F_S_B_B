@@ -34,3 +34,34 @@ class EmployeForm(forms.Form):
 
 				self.pos_id = self.cleaned_data['pos_id']
 				self.user_id = self.cleaned_data['user_id']
+
+class PosIDForm(forms.Form):
+		pos_id = forms.IntegerField(label='Position id', min_value=0)
+		pos_get_by_id = 0
+
+		def clean(self):
+				print self.data
+				if 'pos_get_by_id' in self.data:
+						self.pos_get_by_id = 1
+				super(PosIDForm, self).clean()
+
+				print self.cleaned_data
+				if 'pos_id' in self.cleaned_data:
+						print self.cleaned_data['pos_id']
+						self.pos_id = self.cleaned_data['pos_id']
+
+class EmpIDForm(forms.Form):
+		emp_id = forms.IntegerField(label='Employer id', min_value=0)
+		emp_get_by_id = 0
+
+		def clean(self):
+				print self.data
+				if 'emp_get_by_id' in self.data:
+						self.emp_get_by_id = 1
+				super(EmpIDForm, self).clean()
+
+				print self.cleaned_data
+				if 'emp_id' in self.cleaned_data:
+						print self.cleaned_data['emp_id']
+						self.emp_id = self.cleaned_data['emp_id']
+

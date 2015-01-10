@@ -1,0 +1,6 @@
+<form action="position_get_by_id" method='post'>
+		{% csrf_token %}
+		<p><label for "id_pos_get">Position id:</label>
+		<input id="id_pos_get" type="text" name="pos_id"/></p>
+		<input type="submit" name="pos_get_by_id" value="Get position"/>
+</form>
