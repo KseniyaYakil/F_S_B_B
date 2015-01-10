@@ -1,0 +1,14 @@
+<form method='post'>
+		{% csrf_token %}
+		{% if set_values %}
+				<p><label for="id_pos_id">Position_id:</label>
+				<input id="id_pos_id" type="text" name="pos_id" maxlength="100" value="{{ set_values.pos_id }}" /></p>
+				<p><label for="id_user_id">User_id:</label>
+				<input type="text" name="user_id" id="id_user_id" value="{{ set_values.user_id }}" /></p>
+				<input type='submit' value='Modify' />
+		{% else %}
+				{{ form.as_p }}
+				<input type='submit' value='Creation' />
+		{% endif %}
+</form>
+

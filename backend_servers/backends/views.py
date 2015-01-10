@@ -6,6 +6,7 @@ from .models import Position, Employe
 from django.shortcuts import get_object_or_404
 import math
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.models import User
 
 POS_PER_PAGE = 3
 
@@ -22,6 +23,36 @@ def paginate(request, objects, objects_per_page):
         return paginator.page(1)
     except EmptyPage:
         return []
+
+
+@csrf_exempt
+def employes(request):
+		if request.method == 'POST':
+				req = request.POST
+
+				pos_id = int(req['pos_id'])
+				user_id = int(req['user_id'])
+
+				#check if already exist
+				emp_obj = None
+				try:
+						emp_obj = Employe.objects.get(position_id=pos_id, user_id=user_id)
+				except Employe.DoesNotExist:
+						print "INF: employe creation (pos_id = {}, user_id = {})".format(pos_id, user_id)
+
+				if emp_obj is not None:
+						print "INF: employe exist (pos_id = {}, user_id = {})".format(pos_id, user_id)
+						return JsonResponse({'status': 'exist', 'emp_id': emp_obj.pk}, status=200)
+
+				try:
+						emp_obj = Employe.objects.create(position_id=pos_id, user_id=user_id)
+				except Employe.ValidationError:
+						print "ERR: no position with id = {} or user with is = {}".format(req['pos_id'], req['user_id'])
+						return JsonResponse({'status': 'not created'}, status=401)
+
+				return JsonResponse({'status': 'created', 'emp_id': emp_obj.pk}, status=200)
+
+		return JsonResponse({'status': 'nothing'}, status=200)
 
 @csrf_exempt
 def positions(request):
@@ -60,7 +91,7 @@ def positions(request):
 										'pages_count': result['pages_count'],
 										'positions': result['positions']}, status=200)
 
-		return JsonResponse(status=200)
+		return JsonResponse({'status': 'nothing'}, status=200)
 
 @csrf_exempt
 def position(request, pos_id):

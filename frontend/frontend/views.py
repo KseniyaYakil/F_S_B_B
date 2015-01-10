@@ -1,8 +1,8 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
-from .proto import SessionAgent, PositionAgent
-from .forms import LoginForm, PositionCreationForm
+from .proto import SessionAgent, PositionAgent, EmployeAgent
+from .forms import LoginForm, PositionCreationForm, EmployeForm
 import urllib3
 import json
 
@@ -13,6 +13,7 @@ def check_if_authorised(request):
 		session_agent = SessionAgent()
 		return session_agent.check_if_authorized(request)
 
+#TODO: modify to 'me' method
 def method(request):
 		res = check_if_authorised(request)
 
@@ -28,6 +29,42 @@ def method(request):
 		#authorized -> request to backend
 
 		return HttpResponse("some method answer")
+
+def employe_create(request):
+		res = check_if_authorised(request)
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		if request.method == 'GET':
+				employe_form = EmployeForm()
+				return render(request, 'frontend/employe_modify.html', {'form': employe_form})
+
+		employe_form = EmployeForm(request.POST)
+		if not employe_form.is_valid():
+				return render(request, 'frontend/employe_modify.html', {'form': employe_form})
+
+		print "INF: creation of employe (pos_id = {}, user_id = {})".format(employe_form.pos_id,
+																				employe_form.user_id)
+
+		fields = dict()
+		fields['pos_id'] = employe_form.pos_id
+		fields['user_id'] = employe_form.user_id
+
+		employe_agent = EmployeAgent()
+		json_ans = employe_agent.create(fields)
+
+		if json_ans is None:
+				return HttpResponse("Internal Error")
+
+		print "INF: status = {}".format(json_ans['status'])
+		if json_ans['status'] == 'created':
+				print "INF: created emp with id={}".format(json_ans['emp_id'])
+
+		if json_ans['status'] == 'exist':
+				print "INF: emp with id={} already exist".format(json_ans['emp_id'])
+
+		#return redirect('employe', emp_id=json_ans['emp_id'])
 
 def position_create(request):
 		res = check_if_authorised(request)

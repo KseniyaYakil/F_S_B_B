@@ -18,14 +18,19 @@ class PositionCreationForm(forms.Form):
 		salary = forms.IntegerField(label='Salary', min_value=5000)
 		salary_currency = forms.CharField(label='Salary currency')
 
-		def set_values(self, name, salary, salary_currency):
-				self.name = name
-				self.salary = salary
-				self.salary_currency = salary_currency
-
 		def clean(self):
 				super(PositionCreationForm, self).clean()
 
 				self.name = self.cleaned_data['name']
 				self.salary = self.cleaned_data['salary']
 				self.salary_currency = self.cleaned_data['salary_currency']
+
+class EmployeForm(forms.Form):
+		pos_id = forms.IntegerField(label='Position_id', min_value=0)
+		user_id = forms.IntegerField(label='User_id', min_value=0)
+
+		def clean(self):
+				super(EmployeForm, self).clean()
+
+				self.pos_id = self.cleaned_data['pos_id']
+				self.user_id = self.cleaned_data['user_id']

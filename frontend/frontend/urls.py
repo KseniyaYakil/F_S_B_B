@@ -12,5 +12,7 @@ urlpatterns = patterns('',
 		url(r'^position/(?P<pos_id>\d+)/delete$', views.position_delete, name='position_delete'),
 		url(r'^position/(?P<pos_id>\d+)/modify$', views.position_modify, name='position_modify'),
 		url(r'^position/all$', views.position_all, name='position_all'),
+
+		url(r'^employe/create$', views.employe_create, name='employe_create'),
 		url(r'^admin/', include(admin.site.urls)),
 )

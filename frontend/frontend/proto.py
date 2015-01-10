@@ -22,6 +22,37 @@ class Agent(object):
 			except Exception as ex:
 				print('ERR: exception occured: {}'.format(ex))
 				return None
+#TODO: rewrite to parent BaseAgent and inheritance
+class EmployeAgent(object):
+		backend_name = "employe"
+		url = 'http://127.0.01:8004/backends'
+		creation_method = 'employes/'
+
+		def __init__(self):
+				self.proto_agent = Agent()
+
+		def send_req(self, uri, **kwards):
+				print "DEB: {0}/{1}".format(self.url, uri)
+				return self.proto_agent.send_req_to_service(url="{0}/{1}".format(self.url, uri), **kwards)
+
+		def parse_response(self, response):
+				if response is None:
+						print "ERR: sending req to `{}' server FAILED".format(self.backend_name)
+
+				if response.status != 200:
+						print "INF: unable to process report. status = {0}".format(response.status)
+
+				return json.loads(response.data.decode('utf-8'))
+
+		def create(self, fields):
+				print "INF: creation req:"
+				for key, value in fields.items():
+						print "\t{} -> {}".format(key, value)
+
+				response = self.send_req(uri=self.creation_method, method='POST', fields=fields)
+
+				return self.parse_response(response)
+
 
 class PositionAgent(object):
 		backend_name = "position"
