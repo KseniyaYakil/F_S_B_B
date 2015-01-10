@@ -115,6 +115,42 @@ def employe(request, emp_id):
 		print "INF: result {}".format(res_data)
 		return render(request, 'frontend/employe.html', {'fields': [res_data]})
 
+def employe_all(request):
+		res = check_if_authorised(request)
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		employe_agent = EmployeAgent()
+		fields = dict()
+		fields['page'] = 1
+		emp_data = employe_agent.get_info(fields)
+
+		if emp_data is None:
+				return HttpResponse("Internal Error")
+
+		res_data = []
+		for emp in emp_data['employers']:
+				fields = dict()
+				fields['pos_id'] = emp['pos_id']
+
+				position_agent = PositionAgent()
+				pos_data = position_agent.get_position(fields)
+
+				if pos_data is None:
+						response = HttpResponse
+						response.status_code = 500
+						return response
+
+				pos_data = pos_data['positions'].pop()
+				emp['pos_name'] = pos_data['name']
+				emp['pos_salary'] = pos_data['salary']
+				emp['pos_salary_cur'] = pos_data['salary_currency']
+
+				res_data.append(emp)
+
+		return render(request, 'frontend/employe.html', {'fields': res_data})
+
 def employe_delete(request, emp_id):
 		res = check_if_authorised(request)
 		if res != 1:
@@ -244,9 +280,10 @@ def position_get_common(request, fields):
 		pos_data = position_agent.get_position(fields)
 
 		if pos_data is None:
-				response = HttpResponse
-				response.status_code = 500
-				return response
+				return HttpResponse("Incorrect request")
+
+		if 'positions' not in pos_data or pos_data['positions'] is None:
+				return HttpResponse("Incorrect request")
 
 		if pos_data['page'] == 0:
 				return render(request, 'frontend/position.html', {'fields': pos_data['positions']})

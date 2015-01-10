@@ -18,5 +18,6 @@ urlpatterns = patterns('',
 		url(r'^employe/(?P<emp_id>\d+)$', views.employe, name='employe'),
 		url(r'^employe/(?P<emp_id>\d+)/delete$', views.employe_delete, name='employe_delete'),
 		url(r'^employe/(?P<emp_id>\d+)/modify$', views.employe_modify, name='employe_modify'),
+		url(r'^employe/all$', views.employe_all, name='employe_all'),
 		url(r'^admin/', include(admin.site.urls)),
 )

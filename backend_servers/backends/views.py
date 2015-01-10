@@ -8,7 +8,8 @@ import math
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.models import User
 
-POS_PER_PAGE = 3
+POS_PER_PAGE = 10
+EMP_PER_PAGE = 10
 
 def home(request):
 		print "INF: home bachends"
@@ -51,21 +52,40 @@ def employes(request):
 						return JsonResponse({'status': 'not created'}, status=401)
 
 				return JsonResponse({'status': 'created', 'emp_id': emp_obj.pk}, status=200)
-		elif request.method == 'GET':
-				emp_id = int(request.GET['emp_id'])
-				print "INF: getting info for employe with id = {}".format(emp_id)
-				try:
-						emp_obj = Employe.objects.get(pk=emp_id)
-				except Employe.DoesNotExist:
-						print "ERR: no employe with emp_id = {}".format(emp_id)
-						return JsonResponse({'status': 'not exist'}, status=401)
 
-				return JsonResponse({	'username': emp_obj.user.username,
-										'name': emp_obj.user.first_name,
-										'email': emp_obj.user.email,
-										'pos_id':emp_obj.position.pk,
-										'user_id': emp_obj.user.pk,
-										'status': 'processed'}, status=200)
+		elif request.method == 'GET':
+				if 'emp_id' in request.GET:
+						emp_id = int(request.GET['emp_id'])
+						print "INF: getting info for employe with id = {}".format(emp_id)
+						try:
+								emp_obj = Employe.objects.get(pk=emp_id)
+						except Employe.DoesNotExist:
+								print "ERR: no employe with emp_id = {}".format(emp_id)
+								return JsonResponse({'status': 'not exist'}, status=401)
+
+						return JsonResponse({	'username': emp_obj.user.username,
+												'name': emp_obj.user.first_name,
+												'email': emp_obj.user.email,
+												'pos_id':emp_obj.position.pk,
+												'user_id': emp_obj.user.pk,
+												'status': 'processed'}, status=200)
+				else:
+						emp_objects = Employe.objects.all()
+						result = dict()
+						result['page'] = request.GET['page']
+						result['pages_count'] = math.ceil(emp_objects.count() / EMP_PER_PAGE)
+
+						emp_paginated = paginate(request, emp_objects, EMP_PER_PAGE)
+						result['employers'] = [{'username': emp_obj.user.username,
+												'name': emp_obj.user.first_name,
+												'email': emp_obj.user.email,
+												'pos_id':emp_obj.position.pk,
+												'user_id': emp_obj.user.pk,
+												'status': 'processed'} for emp_obj in emp_paginated]
+
+						return JsonResponse({	'page': result['page'],
+												'pages_count': result['pages_count'],
+												'employers': result['employers']}, status=200)
 
 		return JsonResponse({'status': 'nothing'}, status=200)
 
@@ -106,16 +126,21 @@ def positions(request):
 				return JsonResponse({'status': 'created', 'pos_id': pos_obj.pk},status=200)
 		elif request.method == 'GET':
 				result = dict()
+				result['positions'] = {}
+				result['page'] = 0
+				result['pages_count'] = 0
 
 				if 'pos_id' in request.GET:
 						pos_id = request.GET.get('pos_id')
 						print "INF: position req by id={}".format(pos_id)
-						pos_obj = get_object_or_404(Position, pk=pos_id)
+						try:
+								pos_obj = Position.objects.get(pk=pos_id)
+						except Position.DoesNotExist:
+								return JsonResponse({'status': 'not exist'}, status=401)
+
 						result['positions'] = [{'name': pos_obj.name,
 												'salary': pos_obj.salary,
 												'salary_currency': pos_obj.salary_currency}]
-						result['page'] = 0
-						result['pages_count'] = 0
 				else:
 						pos_objects = Position.objects.all()
 						result['page'] = request.GET['page']
