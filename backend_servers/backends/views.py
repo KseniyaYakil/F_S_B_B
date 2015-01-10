@@ -51,6 +51,20 @@ def employes(request):
 						return JsonResponse({'status': 'not created'}, status=401)
 
 				return JsonResponse({'status': 'created', 'emp_id': emp_obj.pk}, status=200)
+		elif request.method == 'GET':
+				emp_id = int(request.GET['emp_id'])
+				print "INF: getting info for employe with id = {}".format(emp_id)
+				try:
+						emp_obj = Employe.objects.get(pk=emp_id)
+				except Employe.DoesNotExist:
+						print "ERR: no employe with emp_id = {}".format(emp_id)
+						return JsonResponse({'status': 'not exist'}, status=401)
+
+				return JsonResponse({	'username': emp_obj.user.username,
+										'name': emp_obj.user.first_name,
+										'email': emp_obj.user.email,
+										'pos_id':emp_obj.position.pk,
+										'status': 'processed'}, status=200)
 
 		return JsonResponse({'status': 'nothing'}, status=200)
 

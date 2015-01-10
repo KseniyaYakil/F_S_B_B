@@ -1,0 +1,27 @@
+<body>
+		<table border="1" cellpadding="1" cellspacing="3" >
+		<colgroup align="center">
+		<thead>
+				<tr>
+				  <th>Username</th>
+				  <th>Name</th>
+				  <th>Email</th>
+				  <th>Position</th>
+				  <th>Salary</th>
+				  <th>Salary_currency</th>
+				</tr>
+		</thead>
+		<tbody>
+				{% for f in fields %}
+				<tr>
+				  <td> {{ f.username }}</td>
+				  <td> {{ f.name }}</td>
+				  <td> {{ f.email }}</td>
+				  <td> {{ f.pos_name }}</td>
+				  <td> {{ f.pos_salary }}</td>
+				  <td> {{ f.pos_salary_cur }}</td>
+				</tr>
+				{% endfor %}
+		</tbody>
+		</table>
+</body>

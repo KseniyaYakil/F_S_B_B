@@ -22,11 +22,13 @@ class Agent(object):
 			except Exception as ex:
 				print('ERR: exception occured: {}'.format(ex))
 				return None
+
 #TODO: rewrite to parent BaseAgent and inheritance
 class EmployeAgent(object):
 		backend_name = "employe"
 		url = 'http://127.0.01:8004/backends'
 		creation_method = 'employes/'
+		get_info_method = 'employes/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -53,6 +55,11 @@ class EmployeAgent(object):
 
 				return self.parse_response(response)
 
+		def get_info(self, fields):
+				print "INF: getting info for req"
+
+				response = self.send_req(uri=self.get_info_method, method='GET', fields=fields)
+				return self.parse_response(response)
 
 class PositionAgent(object):
 		backend_name = "position"

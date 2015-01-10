@@ -66,6 +66,55 @@ def employe_create(request):
 
 		#return redirect('employe', emp_id=json_ans['emp_id'])
 
+def employe(request, emp_id):
+		res = check_if_authorised(request)
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		#TODO: add checking if current user_id == emp_id.user_id
+
+		#req employe_server for emp_id. returns user_info + pos_id
+		print "INF: req for info of employe with id={}".format(emp_id)
+
+		fields = dict()
+		fields['emp_id'] = emp_id
+
+		employe_agent = EmployeAgent()
+		res_data = employe_agent.get_info(fields)
+
+		if res_data is None:
+				return HttpResponse("Internal Error")
+
+		print "DEB: status = {}".format(res_data['status'])
+		if res_data['status'] == 'not exist':
+				return HttpResponse("Employe with id={} doesn't exist".format(emp_id))
+
+		print "INF: employe (username={}, name={}, email={}, pos_id={})".format(res_data['username'],
+																				res_data['name'],
+																				res_data['email'],
+																				res_data['pos_id'])
+		#req to position_server. returns pos_info
+		print "INF: req for info of position with id={}".format(res_data['pos_id'])
+		fields = dict()
+		fields['pos_id'] = res_data['pos_id']
+
+		position_agent = PositionAgent()
+		pos_data = position_agent.get_position(fields)
+
+		if pos_data is None:
+				response = HttpResponse
+				response.status_code = 500
+				return response
+
+		pos_data = pos_data['positions'].pop()
+		res_data['pos_name'] = pos_data['name']
+		res_data['pos_salary'] = pos_data['salary']
+		res_data['pos_salary_cur'] = pos_data['salary_currency']
+
+		print "INF: result {}".format(res_data)
+		return render(request, 'frontend/employe.html', {'fields': [res_data]})
+
 def position_create(request):
 		res = check_if_authorised(request)
 		if res != 1:
