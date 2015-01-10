@@ -69,6 +69,18 @@ def employes(request):
 		return JsonResponse({'status': 'nothing'}, status=200)
 
 @csrf_exempt
+def employe(request, emp_id):
+		if request.method == 'DELETE':
+				try:
+						emp_obj = Employe.objects.get(pk=emp_id)
+				except Employe.DoesNotExist:
+						return JsonResponse({'status': 'no such employe'}, status=401)
+
+				print "INF: employer with id={} was removed".format(emp_id)
+				emp_obj.delete()
+				return JsonResponse({'status': 'removed'}, status=200)
+
+@csrf_exempt
 def positions(request):
 		if request.method == 'POST':
 				req = request.POST

@@ -64,7 +64,7 @@ def employe_create(request):
 		if json_ans['status'] == 'exist':
 				print "INF: emp with id={} already exist".format(json_ans['emp_id'])
 
-		#return redirect('employe', emp_id=json_ans['emp_id'])
+		return redirect('employe', emp_id=json_ans['emp_id'])
 
 def employe(request, emp_id):
 		res = check_if_authorised(request)
@@ -114,6 +114,28 @@ def employe(request, emp_id):
 
 		print "INF: result {}".format(res_data)
 		return render(request, 'frontend/employe.html', {'fields': [res_data]})
+
+def employe_delete(request, emp_id):
+		res = check_if_authorised(request)
+		if res != 1:
+				print "INF: access is not allowed"
+				return HttpResponse("Access is denied. Please, authorize")
+
+		print "INF: removing employe with id={}".format(emp_id)
+
+		employe_agent = EmployeAgent()
+		emp_data = employe_agent.delete_employe(emp_id)
+
+		if emp_data is None:
+				response = HttpResponse
+				response.status_code = 500
+				return response
+
+		if emp_data['status'] != 'removed':
+				print "INF: couldn't remove employe with id ={}".format(emp_id)
+				return HttpResponse("Employe with id = {} was not removed".format(emp_id))
+
+		return HttpResponse("Employe with id = {} was succesfully removed".format(emp_id))
 
 def position_create(request):
 		res = check_if_authorised(request)

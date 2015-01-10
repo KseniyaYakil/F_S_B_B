@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     url(r'^position/(?P<pos_id>\d+)$', 'backends.views.position', name='position'),
 
     url(r'^employes/', 'backends.views.employes', name='employes'),
+    url(r'^employe/(?P<emp_id>\d+)$', 'backends.views.employe', name='employe'),
 )
 

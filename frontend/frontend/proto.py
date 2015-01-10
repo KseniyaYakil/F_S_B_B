@@ -29,6 +29,7 @@ class EmployeAgent(object):
 		url = 'http://127.0.01:8004/backends'
 		creation_method = 'employes/'
 		get_info_method = 'employes/'
+		delete_method = 'employe/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -59,6 +60,10 @@ class EmployeAgent(object):
 				print "INF: getting info for req"
 
 				response = self.send_req(uri=self.get_info_method, method='GET', fields=fields)
+				return self.parse_response(response)
+
+		def delete_employe(self, emp_id):
+				response = self.send_req(uri="{}{}".format(self.delete_method, emp_id), method='DELETE')
 				return self.parse_response(response)
 
 class PositionAgent(object):
