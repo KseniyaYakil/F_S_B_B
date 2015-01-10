@@ -30,6 +30,7 @@ class EmployeAgent(object):
 		creation_method = 'employes/'
 		get_info_method = 'employes/'
 		delete_method = 'employe/'
+		modify_method = 'employe/'
 
 		def __init__(self):
 				self.proto_agent = Agent()
@@ -65,6 +66,11 @@ class EmployeAgent(object):
 		def delete_employe(self, emp_id):
 				response = self.send_req(uri="{}{}".format(self.delete_method, emp_id), method='DELETE')
 				return self.parse_response(response)
+
+		def modify_employe(self, emp_id, fields):
+				response = self.send_req(uri="{}{}".format(self.modify_method, emp_id), method='PUT', fields=fields)
+				print "DEB: resp {}".format(response)
+				return 'modified'
 
 class PositionAgent(object):
 		backend_name = "position"

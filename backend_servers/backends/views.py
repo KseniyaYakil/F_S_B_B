@@ -64,6 +64,7 @@ def employes(request):
 										'name': emp_obj.user.first_name,
 										'email': emp_obj.user.email,
 										'pos_id':emp_obj.position.pk,
+										'user_id': emp_obj.user.pk,
 										'status': 'processed'}, status=200)
 
 		return JsonResponse({'status': 'nothing'}, status=200)
@@ -79,6 +80,18 @@ def employe(request, emp_id):
 				print "INF: employer with id={} was removed".format(emp_id)
 				emp_obj.delete()
 				return JsonResponse({'status': 'removed'}, status=200)
+
+		elif request.method == 'PUT':
+				emp_fields = json.loads(request.body.decode('utf-8'))
+				print "INF: modify employe ({})".format(emp_fields)
+
+				emp_obj = get_object_or_404(Employe, pk=emp_id)
+				emp_obj.position_id = int(emp_fields['pos_id'])
+				emp_obj.user_id = int(emp_fields['user_id'])
+
+				emp_obj.save()
+				return JsonResponse({'status': 'modified'}, status=200)
+
 
 @csrf_exempt
 def positions(request):

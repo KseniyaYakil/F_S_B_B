@@ -1,6 +1,30 @@
 <form method='post'>
 		{% csrf_token %}
 		{% if set_values %}
+				<table border="1" cellpadding="1" cellspacing="3" >
+				<colgroup align="center">
+				<thead>
+						<tr>
+						  <th>Username</th>
+						  <th>Name</th>
+						  <th>Email</th>
+						  <th>Position</th>
+						  <th>Salary</th>
+						  <th>Salary_currency</th>
+						</tr>
+				</thead>
+				<tbody>
+						<tr>
+						  <td> {{ set_values.username }}</td>
+						  <td> {{ set_values.name }}</td>
+						  <td> {{ set_values.email }}</td>
+						  <td> {{ set_values.pos_name }}</td>
+						  <td> {{ set_values.pos_salary }}</td>
+						  <td> {{ set_values.pos_salary_cur }}</td>
+						</tr>
+				</tbody>
+				</table>
+
 				<p><label for="id_pos_id">Position_id:</label>
 				<input id="id_pos_id" type="text" name="pos_id" maxlength="100" value="{{ set_values.pos_id }}" /></p>
 				<p><label for="id_user_id">User_id:</label>

@@ -137,6 +137,39 @@ def employe_delete(request, emp_id):
 
 		return HttpResponse("Employe with id = {} was succesfully removed".format(emp_id))
 
+def employe_modify(request, emp_id):
+		if request.method == 'GET':
+				res = check_if_authorised(request)
+				if res != 1:
+						print "INF: access is not allowed"
+						return HttpResponse("Access is denied. Please, authorize")
+
+				fields = dict()
+				fields['emp_id'] = emp_id
+
+				employe_agent = EmployeAgent()
+				emp_data = employe_agent.get_info(fields)
+				if emp_data is None:
+						response = HttpResponse
+						response.status_code = 500
+						return response
+
+				modify_form = EmployeForm()
+				return render(request, 'frontend/employe_modify.html', {'form': modify_form, 'set_values': emp_data})
+
+		modify_form = EmployeForm(request.POST)
+		if not modify_form.is_valid():
+				return render(request, 'frontend/employe_modify.html', {'form': modify_form})
+
+		fields = dict()
+		fields['pos_id'] = modify_form.pos_id
+		fields['user_id'] = modify_form.user_id
+
+		employe_agent = EmployeAgent()
+		employe_agent.modify_employe(emp_id, fields)
+
+		return redirect('employe', emp_id)
+
 def position_create(request):
 		res = check_if_authorised(request)
 		if res != 1:
